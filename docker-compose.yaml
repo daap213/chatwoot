@@ -3,19 +3,16 @@ version: "3"
 services:
   base: &base
     image: chatwoot/chatwoot:latest
-    working_dir: /app
     env_file: .env ## Change this file for customized env variables
     volumes:
-      - ./:/app
-      - /app/storage
+      - data:/app
 
   rails:
     <<: *base
     depends_on:
       - postgres
       - redis
-    volumes:
-      - ./:/app
+
     ports:
       - "3000:3000"
     environment:
@@ -37,8 +34,6 @@ services:
 
   sidekiq:
     <<: *base
-    volumes:
-      - ./:/app
     depends_on:
       - postgres
       - redis
@@ -76,6 +71,13 @@ services:
       - "6379:6379"
     networks:
       - web
+
+volumes:
+  data:
+  packs:
+  node_modules:
+  cache:
+  bundle:
 
 networks:
   web:
