@@ -6,7 +6,7 @@ services:
     working_dir: /app
     env_file: .env ## Change this file for customized env variables
     volumes:
-      - ./data:/app
+      - ./:/app
       - /app/storage
 
   rails:
@@ -15,7 +15,7 @@ services:
       - postgres
       - redis
     volumes:
-      - ./data:/app
+      - ./:/app
     ports:
       - "3000:3000"
     environment:
@@ -38,7 +38,7 @@ services:
   sidekiq:
     <<: *base
     volumes:
-      - ./data:/app
+      - ./:/app
     depends_on:
       - postgres
       - redis
