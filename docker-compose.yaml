@@ -5,7 +5,7 @@ services:
     image: chatwoot/chatwoot:latest
     env_file: .env ## Change this file for customized env variables
     volumes:
-      - data:/app
+      - ./data:/app
 
   rails:
     <<: *base
@@ -71,13 +71,6 @@ services:
       - "6379:6379"
     networks:
       - web
-
-volumes:
-  data:
-  packs:
-  node_modules:
-  cache:
-  bundle:
 
 networks:
   web:
