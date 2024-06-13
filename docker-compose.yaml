@@ -15,7 +15,7 @@ services:
       - postgres
       - redis
     volumes:
-      - ./:/app:delegated
+      - ./:/app
       - node_modules:/app/node_modules
       - packs:/app/public/packs
       - cache:/app/tmp/cache
@@ -42,7 +42,7 @@ services:
   sidekiq:
     <<: *base
     volumes:
-      - ./:/app:delegated
+      - ./:/app
       - node_modules:/app/node_modules
       - packs:/app/public/packs
       - cache:/app/tmp/cache
