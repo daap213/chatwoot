@@ -30,8 +30,6 @@ services:
       - "traefik.http.routers.rails.tls.certresolver=leresolver"
       - "traefik.docker.network=proxy_default"
     command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
-    volumes:
-      - ./data:/app
     networks:
       - web
 
@@ -47,8 +45,6 @@ services:
       - RAILS_ENV=production
       - INSTALLATION_ENV=docker
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
-    volumes:
-      - ./data:/app
     networks:
       - web
 
