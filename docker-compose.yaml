@@ -9,6 +9,8 @@ services:
 
   rails:
     <<: *base
+    volumes:
+      - ./:/
     depends_on:
       - postgres
       - redis
@@ -35,6 +37,8 @@ services:
 
   sidekiq:
     <<: *base
+    volumes:
+      - ./:/
     depends_on:
       - postgres
       - redis
