@@ -5,7 +5,7 @@ services:
     image: chatwoot/chatwoot:latest
     env_file: .env ## Change this file for customized env variables
     volumes:
-      - /data/storage:/app/storage
+      - /data:/app
 
   rails:
     <<: *base
@@ -28,6 +28,8 @@ services:
       - "traefik.http.routers.rails.tls.certresolver=leresolver"
       - "traefik.docker.network=proxy_default"
     command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    volumes:
+      - /data:/app
     networks:
       - web
 
@@ -41,6 +43,8 @@ services:
       - RAILS_ENV=production
       - INSTALLATION_ENV=docker
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    volumes:
+      - /data:/app
     networks:
       - web
 
