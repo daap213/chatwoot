@@ -1,0 +1,79 @@
+version: "3"
+
+services:
+  base: &base
+    image: chatwoot/chatwoot:latest
+    working_dir: /app
+    env_file: .env ## Change this file for customized env variables
+    volumes:
+      - .:/data
+        - /data/storage:/app/storage
+
+  rails:
+    <<: *base
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    entrypoint: docker/entrypoints/rails.sh
+    labels:
+      - "traefik.http.routers.rails.rule=Host(`chat.dev.daaptech.org`)"
+      - "traefik.http.routers.rails.entrypoints=websecure"
+      - "traefik.enable=true"
+      - "traefik.http.routers.rails.service=rails"
+      - "traefik.http.services.rails.loadbalancer.server.port=3000"
+      - "traefik.http.routers.rails.tls.certresolver=leresolver"
+      - "traefik.docker.network=proxy_default"
+    command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    networks:
+      - web
+
+  sidekiq:
+    <<: *base
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    networks:
+      - web
+
+  postgres:
+    image: postgres:12
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - /data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=chatwoot
+      - POSTGRES_USER=postgres
+      # Please provide your own password.
+      - POSTGRES_PASSWORD=zTCSJQ7pk6101YdV6j0J
+    networks:
+      - web
+
+  redis:
+    image: redis:alpine
+    restart: always
+    command: ["sh", "-c", 'redis-server --requirepass "$REDIS_PASSWORD"']
+    env_file: .env
+    volumes:
+      - /data/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - web
+
+networks:
+  web:
+    external:
+      name: proxy_default
